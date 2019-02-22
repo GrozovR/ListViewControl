@@ -12,7 +12,7 @@ void UnregisterListCntrl();
 class CListControl {	
 
 public:
-	CListControl(/*HWND hwnd*/);
+	CListControl();
 	bool Paint(HWND hwnd);
 
 	bool InsertItem(std::wstring item) 

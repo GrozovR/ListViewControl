@@ -1,89 +1,78 @@
 #include "ListControlView.h"
+#include "resource.h"
 
 #define CUSTOM_ID     100
 #define MARGIN          7
 
-// Global Variables:
 HINSTANCE hInst;
 HWND ListHwnd;
 
-bool initMainWindow();
+INT_PTR CALLBACK DialogProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
 
-static LRESULT CALLBACK
-MainProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
-
-
-int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
-                     _In_opt_ HINSTANCE hPrevInstance,
-                     _In_ LPWSTR    lpCmdLine,
-                     _In_ int       nCmdShow)
+int APIENTRY wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance,
+                     _In_ LPWSTR    lpCmdLine, _In_ int       nCmdShow)
 {
     UNREFERENCED_PARAMETER(hPrevInstance);
     UNREFERENCED_PARAMETER(lpCmdLine);
 	hInst = hInstance;
-	HWND mainWinHWND;
+	HWND dialogHWND;
 	MSG msg;
 
-	RegisterListCntrl();
-	initMainWindow();
-
-	mainWinHWND = CreateWindow(_T("MainWindow"), _T("App Name"), WS_OVERLAPPEDWINDOW,
-		CW_USEDEFAULT, CW_USEDEFAULT, 350, 250, NULL, NULL, hInstance, NULL);
-	ShowWindow(mainWinHWND, nCmdShow);
-
-    // Main message loop:
-    while (GetMessage(&msg, nullptr, 0, 0))
-    {
-		if (IsDialogMessage(mainWinHWND, &msg))
+	dialogHWND = CreateDialog(hInstance, MAKEINTRESOURCE(IDD_DIALOG1), NULL, DialogProc);
+	ShowWindow(dialogHWND, nCmdShow);
+    
+	while (GetMessage(&msg, nullptr, 0, 0))
+    {	
+		if (msg.message == WM_KEYDOWN) {
+			
 			continue;
-
+		}
 		TranslateMessage(&msg);
-		DispatchMessage(&msg);     
+		DispatchMessage(&msg);	   
+		
     }
-
-	UnregisterListCntrl();
-
+	
     return (int) msg.wParam;
 }
 
-static LRESULT CALLBACK
-MainProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
+INT_PTR CALLBACK DialogProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 {
 	switch (uMsg) {
-	case WM_SIZE:
-		if (wParam == SIZE_MAXIMIZED || wParam == SIZE_RESTORED) {
-			WORD cx = LOWORD(lParam);
-			WORD cy = HIWORD(lParam);
-			SetWindowPos(ListHwnd, NULL, MARGIN, MARGIN,
-				cx - 2 * MARGIN, cy - 2 * MARGIN, SWP_NOZORDER);
+		int msg;
+		
+	case (WM_KEYDOWN): {
+			if (wParam == VK_UP || wParam == VK_DOWN)
+			{
+				PostMessage(ListHwnd, uMsg, wParam, lParam);
+				break;
+			}
 		}
-		break;
-
-	case WM_CREATE:
+	case WM_COMMAND: {
+		int wmId = LOWORD(wParam);
+		// Parse the menu selections:
+		switch (wmId)
+		{
+		case IDOK:
+			PostQuitMessage(0);
+			break;
+		case IDCANCEL:
+			PostQuitMessage(0);
+			break;
+		}
+	}
+	case WM_INITDIALOG:
+		RegisterListCntrl();
+		RECT ClientRect;
+		GetClientRect(hwnd, &ClientRect);
 		ListHwnd = CreateWindow(CUSTOM_LIST_CONTROL, NULL, WS_CHILD | WS_VISIBLE | WS_VSCROLL | SS_OWNERDRAW,
-			0, 0, 0, 0, hwnd, (HMENU)CUSTOM_ID, hInst, NULL);
+			0, 0, ClientRect.right, (ClientRect.bottom - 40), hwnd, (HMENU)CUSTOM_ID, hInst, NULL);
 		break;
 
 	case WM_CLOSE:
-		PostQuitMessage(0);
+		UnregisterListCntrl();
+ 		PostQuitMessage(0);
 		break;
 	}
 
 	return DefWindowProc(hwnd, uMsg, wParam, lParam);
-}
-
-
-bool initMainWindow()
-{
-	WNDCLASS wc = { 0 };
-	wc.style = CS_HREDRAW | CS_VREDRAW;
-	wc.lpfnWndProc = MainProc;
-	wc.hInstance = hInst;
-	wc.hCursor = LoadCursor(NULL, IDC_ARROW);
-	wc.hbrBackground = (HBRUSH)(COLOR_BTNFACE + 1);
-	wc.lpszClassName = _T("MainWindow");
-
-	RegisterClass(&wc);
-
-	return true;
 }
