@@ -8,25 +8,27 @@ static LRESULT CALLBACK ListCntrlProc( HWND hwnd, UINT uMsg, WPARAM wParam, LPAR
 
 	case WM_CREATE:
 		listControl.SetHWND( hwnd );
-		break;
+		return 0;
 
 	case WM_PAINT:
 		listControl.Paint( hwnd );
-		break;
+		return 0;
 
 	case WM_LBUTTONDOWN:
 		listControl.OnMouseClick( lParam );
-		break;
+		return 0;
 
 	case WM_VSCROLL:
 		listControl.OnScroll( wParam );
-		break;
+		return 0;
 
 	case WM_KEYUP: {
 		if( wParam == VK_UP ) {
 			listControl.MoveUp();
+			return 0;
 		} else if( wParam == VK_DOWN ) {
 			listControl.MoveDown();
+			return 0;
 		}
 		break; 
 	}
@@ -212,14 +214,12 @@ void CListControl::setFocus()
 
 	while( selectedItemTop < rect.top ) {
 		SendMessage( listHWND, WM_VSCROLL, SB_LINEUP, NULL );
-		//InvalidateRgn(listHWND, NULL, FALSE);
 		GetClientRect( listHWND, &rect );
 		selectedItemTop = (currentIndex - scrollBarOffset)* LINE_HEIGHT;
 	}
 
 	while( (selectedItemTop + LINE_HEIGHT) > rect.bottom ) {
 		SendMessage( listHWND, WM_VSCROLL, SB_LINEDOWN, NULL );
-		//InvalidateRgn(listHWND, NULL, FALSE);
 		GetClientRect( listHWND, &rect );
 		selectedItemTop = (currentIndex - scrollBarOffset)* LINE_HEIGHT;
 	}

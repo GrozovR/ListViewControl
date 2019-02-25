@@ -22,7 +22,6 @@ int APIENTRY wWinMain( _In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstanc
 	{
 		TranslateMessage( &msg );
 		DispatchMessage( &msg );
-
 	}
 
 	return (int)msg.wParam;
@@ -31,35 +30,34 @@ int APIENTRY wWinMain( _In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstanc
 INT_PTR CALLBACK DialogProc( HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
 {
 	switch( uMsg ) {
-		int msg;
-
 
 	case WM_COMMAND: {
 		int wmId = LOWORD( wParam );
-		// Parse the menu selections:
 		switch( wmId )
 		{
 		case IDOK:
 			PostQuitMessage( 0 );
-			break;
+			return 0;
 		case IDCANCEL:
 			PostQuitMessage( 0 );
-			break;
+			return 0;
 		}
 	}
-	case WM_INITDIALOG:
+	case WM_INITDIALOG: {
 		RegisterListCntrl();
 		RECT ClientRect;
 		GetClientRect( hwnd, &ClientRect );
-		ListHwnd = CreateWindow( CUSTOM_LIST_CONTROL, NULL, WS_CHILD | WS_VISIBLE | WS_VSCROLL | SS_OWNERDRAW,
-			0, 0, ClientRect.right, (ClientRect.bottom - 40), hwnd, (HMENU)CUSTOM_ID, hInst, NULL );
+		ListHwnd = CreateWindow( CUSTOM_LIST_CONTROL, NULL, WS_CHILD | WS_VISIBLE | WS_VSCROLL,
+			0, 0, ClientRect.right, (ClientRect.bottom - 40), hwnd, NULL, hInst, NULL );
 		SetFocus( ListHwnd );
-		break;
+		return 0; 
+	}
 
-	case WM_CLOSE:
+	case WM_CLOSE: {
 		UnregisterListCntrl();
 		PostQuitMessage( 0 );
-		break;
+		return 0;
+	}
 	}
 
 	return DefWindowProc( hwnd, uMsg, wParam, lParam );

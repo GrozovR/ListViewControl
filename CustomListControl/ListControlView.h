@@ -1,3 +1,4 @@
+//TODO: check - may #ifndef
 #pragma once
 #include <Windows.h>
 #include <tchar.h>
@@ -5,7 +6,6 @@
 #include <vector>
 
 #define CUSTOM_LIST_CONTROL TEXT("ListControl")
-#define CUSTOM_ID     100
 
 void RegisterListCntrl();
 void UnregisterListCntrl();
@@ -29,7 +29,6 @@ public:
 	void OnMouseClick( LPARAM lParam );
 	void MoveUp();
 	void MoveDown();
-
 private:
 
 	void updateScrollBar( RECT clientRect );
