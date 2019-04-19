@@ -20,45 +20,51 @@ int APIENTRY wWinMain( _In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstanc
 
 	while( GetMessage( &msg, nullptr, 0, 0 ) )
 	{
+		/* Для поддержки keyboard interface в диалоге
+		if( !IsDialogMessage( dialogHWND, &msg ) ) {
+			TranslateMessage( &msg ); 
+			DispatchMessage( &msg );
+		}*/		
 		TranslateMessage( &msg );
 		DispatchMessage( &msg );
 	}
-
 	return (int)msg.wParam;
 }
 
 INT_PTR CALLBACK DialogProc( HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
 {
-	switch( uMsg ) {
+	switch( uMsg ) 
+	{
 
 	case WM_COMMAND: {
 		int wmId = LOWORD( wParam );
 		switch( wmId )
 		{
-		case IDOK:
-			PostQuitMessage( 0 );
-			return 0;
+		case IDOK :
+			PostMessage( hwnd, WM_CLOSE, 0, 0 );
+			return TRUE;
 		case IDCANCEL:
-			PostQuitMessage( 0 );
-			return 0;
+			PostMessage( hwnd, WM_CLOSE, 0, 0 );
+			return TRUE;
 		}
 	}
-	case WM_INITDIALOG: {
+	case WM_INITDIALOG:
+	{
 		RegisterListCntrl();
 		RECT ClientRect;
 		GetClientRect( hwnd, &ClientRect );
 		ListHwnd = CreateWindow( CUSTOM_LIST_CONTROL, NULL, WS_CHILD | WS_VISIBLE | WS_VSCROLL,
-			0, 0, ClientRect.right, (ClientRect.bottom - 40), hwnd, NULL, hInst, NULL );
+			0, 0, ClientRect.right, ( ClientRect.bottom - 40 ), hwnd, NULL, hInst, NULL );
 		SetFocus( ListHwnd );
-		return 0; 
+		return FALSE; // Что бы система не установила default focus
 	}
-
-	case WM_CLOSE: {
+	case WM_CLOSE:
+	{
 		UnregisterListCntrl();
 		PostQuitMessage( 0 );
-		return 0;
+		return TRUE;
 	}
+	default:
+		return FALSE;
 	}
-
-	return DefWindowProc( hwnd, uMsg, wParam, lParam );
 }

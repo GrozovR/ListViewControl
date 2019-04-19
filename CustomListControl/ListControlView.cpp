@@ -40,7 +40,7 @@ void RegisterListCntrl()
 {
 	WNDCLASS wc = { 0 };
 
-	wc.style = CS_GLOBALCLASS | CS_HREDRAW | CS_VREDRAW;
+	wc.style = CS_HREDRAW | CS_VREDRAW;
 	wc.lpfnWndProc = ListCntrlProc;
 	wc.hCursor = LoadCursor( NULL, IDC_ARROW );
 	wc.lpszClassName = CUSTOM_LIST_CONTROL;
@@ -60,14 +60,6 @@ CListControl::CListControl()
 	listStrings.push_back( TEXT( "two" ) );
 	listStrings.push_back( TEXT( "three" ) );
 	listStrings.push_back( TEXT( "four" ) );
-	listStrings.push_back( TEXT( "five" ) );
-	listStrings.push_back( TEXT( "six" ) );
-	listStrings.push_back( TEXT( "seven" ) );
-	listStrings.push_back( TEXT( "eight" ) );
-	listStrings.push_back( TEXT( "nine" ) );
-	listStrings.push_back( TEXT( "ten" ) );
-	listStrings.push_back( TEXT( "eleven" ) );
-	listStrings.push_back( L"twelve" );
 }
 
 bool CListControl::Paint( HWND hwnd )
@@ -115,6 +107,7 @@ void CListControl::OnScroll( WPARAM wParam )
 	GetScrollInfo( listHWND, SB_VERT, &si );
 
 	scrollBarOffset = si.nPos;
+
 
 	switch( LOWORD( wParam ) ) {
 		// User clicked the top arrow.
